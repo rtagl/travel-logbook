@@ -1,10 +1,14 @@
+Dropped Pin Schema
+
 # Travel Log
 
-- Title
-- Description
-- Comment
-- Image
-- Start Date
-- End Date
-- Latitude
-- Longitude
+- Title - String
+- Description - String
+- Comment - String
+- Image - String, URL
+- Rating - Scale 1 - 10
+- Visit Date - DateTime
+- Latitude - Number
+- Longitude - Number
+- Created At - DateTime
+- Updated At - DateTime
