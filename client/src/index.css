@@ -7,3 +7,9 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+.marker {
+  stroke: #f8c102;
+  fill: none;
+  transform: translate(-50%, -100%);
+}
