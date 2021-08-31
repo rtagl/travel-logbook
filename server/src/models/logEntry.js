@@ -33,9 +33,21 @@ const logEntrySchema = new Schema(
       max: 180,
       required: true,
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   { timestamps: true }
 );
+
+logEntrySchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
 const LogEntry = mongoose.model('LogEntry', logEntrySchema);
 

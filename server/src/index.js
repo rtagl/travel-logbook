@@ -8,12 +8,21 @@ const mongoose = require('mongoose');
 const middlewares = require('./middlewares');
 
 const app = express();
-const logs = require('./api/logs');
+const logsRouter = require('./api/logs');
+const usersRouter = require('./api/users');
 
-mongoose.connect(process.env.DATABASE_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(process.env.DATABASE_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    const url = process.env.DATABASE_URL;
+    console.log('connected to MongoDB: ', url);
+  })
+  .catch((error) => {
+    console.log('Error connecting to MongoDB', error.message);
+  });
 
 app.use(morgan('common'));
 app.use(helmet());
@@ -24,7 +33,8 @@ app.get('/', (req, res) => {
   res.json({ message: 'Hello World' });
 });
 
-app.use('/api/logs', logs);
+app.use('/api/logs', logsRouter);
+app.use('/api/users', usersRouter);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

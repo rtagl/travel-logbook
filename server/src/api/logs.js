@@ -1,10 +1,8 @@
-const { Router } = require('express');
+const logsRouter = require('express').Router();
 
 const LogEntry = require('../models/logEntry');
 
-const router = Router();
-
-router.get('/', async (req, res, next) => {
+logsRouter.get('/', async (req, res, next) => {
   try {
     const entries = await LogEntry.find({});
     res.json(entries);
@@ -13,7 +11,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
+logsRouter.post('/', async (req, res, next) => {
   console.log(req.body);
 
   try {
@@ -28,4 +26,4 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-module.exports = router;
+module.exports = logsRouter;

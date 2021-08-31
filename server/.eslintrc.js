@@ -11,5 +11,7 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'comma-dangle': ['error', 'only-multiline'],
+    'prefer-destructuring': ['error', { object: false, array: false }],
+    'no-underscore-dangle': ['error', { allow: true }],
   },
 };
