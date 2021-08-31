@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
+import * as api from './API';
+import NewEntryForm from './components/NewEntryForm';
+
 const App = () => {
   const [logEntries, setLogEntries] = useState([]);
   const [showPopup, setShowPopup] = useState({});
@@ -25,12 +28,17 @@ const App = () => {
 
   // fetch log entries from the server
   useEffect(() => {
-    const getAllLogs = async () => {
-      const response = await fetch('http://localhost:3001/api/logs');
-      const logsData = await response.json();
-      setLogEntries(logsData);
-    };
-    getAllLogs();
+    (async () => {
+      const logEntries = await api.getAll();
+      setLogEntries(logEntries);
+    })();
+
+    // const getAllLogs = async () => {
+    //   const response = await fetch('http://localhost:3001/api/logs');
+    //   const logsData = await response.json();
+    //   setLogEntries(logsData);
+    // };
+    // getAllLogs();
   }, []);
 
   const showAddMarkerPopup = (event) => {
@@ -46,7 +54,7 @@ const App = () => {
     });
   };
 
-  const handleChange = (event) => {
+  const handleFormChange = (event) => {
     const value = event.target.value;
     setNewEntry({
       ...newEntry,
@@ -56,7 +64,21 @@ const App = () => {
 
   const saveEntry = (e) => {
     e.preventDefault();
-    console.log(newEntry);
+    console.log(newEntry, 'this is a new entry');
+    api.createEntry(newEntry).then((savedEntry) => {
+      console.log(savedEntry);
+      setLogEntries((logEntries) => logEntries.concat(savedEntry));
+      setNewEntry({
+        title: '',
+        description: '',
+        comment: '',
+        rating: '',
+        latitude: '',
+        longitude: '',
+        visitDate: '',
+      });
+      setAddEntryLocation(null);
+    });
   };
 
   return (
@@ -73,7 +95,7 @@ const App = () => {
           onClick={() => setShowPopup({ [entry._id]: true })}>
           <Marker latitude={entry.latitude} longitude={entry.longitude}>
             <svg
-              className="marker"
+              className="marker yellow"
               style={{
                 width: '24px',
                 height: '24px',
@@ -111,78 +133,40 @@ const App = () => {
       ))}
       <>
         {addEntryLocation ? (
-          <Popup
-            latitude={addEntryLocation.latitude}
-            longitude={addEntryLocation.longitude}
-            closeButton={true}
-            closeOnClick={true}
-            dynamicPosition={true}
-            onClose={() => setAddEntryLocation(null)}
-            anchor="top">
-            <div>
-              <form onSubmit={saveEntry}>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td align="left">Title</td>
-                      <td align="right">
-                        <input
-                          name="title"
-                          value={newEntry.title}
-                          onChange={handleChange}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="left">Description</td>
-                      <td align="right">
-                        <input
-                          name="description"
-                          value={newEntry.description}
-                          onChange={handleChange}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="left">Comment</td>
-                      <td align="right">
-                        <input
-                          name="comment"
-                          value={newEntry.comment}
-                          onChange={handleChange}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="left">Rating</td>
-                      <td align="right">
-                        <input
-                          type="number"
-                          min="0"
-                          max="10"
-                          name="rating"
-                          value={newEntry.rating}
-                          onChange={handleChange}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="left">Visit Date</td>
-                      <td align="right">
-                        <input
-                          type="date"
-                          name="visitDate"
-                          value={newEntry.visitDate}
-                          onChange={handleChange}
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <button type="submit">Save</button>
-              </form>
-            </div>
-          </Popup>
+          <div>
+            <Marker
+              latitude={addEntryLocation.latitude}
+              longitude={addEntryLocation.longitude}>
+              <svg
+                className="marker red"
+                style={{
+                  width: '24px',
+                  height: '24px',
+                }}
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle fill="#f05305" cx="12" cy="10" r="3"></circle>
+              </svg>
+            </Marker>
+            <Popup
+              latitude={addEntryLocation.latitude}
+              longitude={addEntryLocation.longitude}
+              closeButton={true}
+              closeOnClick={false}
+              dynamicPosition={true}
+              onClose={() => setAddEntryLocation(null)}
+              anchor="top">
+              <NewEntryForm
+                newEntry={newEntry}
+                handleFormChange={handleFormChange}
+                saveEntry={saveEntry}
+              />
+            </Popup>
+          </div>
         ) : null}
       </>
     </ReactMapGL>
