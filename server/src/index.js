@@ -10,11 +10,13 @@ const middlewares = require('./middlewares');
 const app = express();
 const logsRouter = require('./api/logs');
 const usersRouter = require('./api/users');
+const loginRouter = require('./api/loginRouter');
 
 mongoose
   .connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useCreateIndex: true,
   })
   .then(() => {
     const url = process.env.DATABASE_URL;
@@ -35,6 +37,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/logs', logsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

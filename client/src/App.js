@@ -32,13 +32,6 @@ const App = () => {
       const logEntries = await api.getAll();
       setLogEntries(logEntries);
     })();
-
-    // const getAllLogs = async () => {
-    //   const response = await fetch('http://localhost:3001/api/logs');
-    //   const logsData = await response.json();
-    //   setLogEntries(logsData);
-    // };
-    // getAllLogs();
   }, []);
 
   const showAddMarkerPopup = (event) => {
@@ -90,9 +83,7 @@ const App = () => {
       onViewportChange={(viewport) => setViewport(viewport)}>
       {/* map through log entries and place marker at coords */}
       {logEntries.map((entry) => (
-        <div
-          key={entry._id}
-          onClick={() => setShowPopup({ [entry._id]: true })}>
+        <div key={entry.id} onClick={() => setShowPopup({ [entry.id]: true })}>
           <Marker latitude={entry.latitude} longitude={entry.longitude}>
             <svg
               className="marker yellow"
@@ -109,7 +100,7 @@ const App = () => {
               <circle fill="#f8c102" cx="12" cy="10" r="3"></circle>
             </svg>
           </Marker>
-          {showPopup[entry._id] ? (
+          {showPopup[entry.id] ? (
             <div className="popup">
               <Popup
                 latitude={entry.latitude}
@@ -169,6 +160,13 @@ const App = () => {
           </div>
         ) : null}
       </>
+      <div
+        style={{
+          width: '200px',
+          height: '300px',
+          backgroundColor: 'green',
+          float: 'right',
+        }}></div>
     </ReactMapGL>
   );
 };
