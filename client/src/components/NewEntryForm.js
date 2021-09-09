@@ -1,8 +1,11 @@
 import React from 'react';
 
-const NewEntryForm = ({ newEntry, handleFormChange, saveEntry }) => {
+const NewEntryForm = ({ newEntry, handleFormChange, saveEntry, errorMsg }) => {
   return (
     <div>
+      {errorMsg ? (
+        <div style={{ color: errorMsg.color }}>{errorMsg.message}</div>
+      ) : null}
       <form onSubmit={saveEntry}>
         <table>
           <tbody>

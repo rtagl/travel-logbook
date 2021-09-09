@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import ReactMapGL, { Marker, Popup } from 'react-map-gl';
+import ReactMapGL from 'react-map-gl';
 
 import * as api from './API';
+import loginService from './api/login';
+import EntryMarker from './components/EntryMarker';
+import EntryPopup from './components/EntryPopup';
 import NewEntryForm from './components/NewEntryForm';
 
 const App = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [logEntries, setLogEntries] = useState([]);
   const [showPopup, setShowPopup] = useState({});
   const [addEntryLocation, setAddEntryLocation] = useState(null);
@@ -34,6 +41,15 @@ const App = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedUser');
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      api.setToken(user.token);
+    }
+  }, []);
+
   const showAddMarkerPopup = (event) => {
     const [longitude, latitude] = event.lngLat;
     setAddEntryLocation({
@@ -58,20 +74,47 @@ const App = () => {
   const saveEntry = (e) => {
     e.preventDefault();
     console.log(newEntry, 'this is a new entry');
-    api.createEntry(newEntry).then((savedEntry) => {
-      console.log(savedEntry);
-      setLogEntries((logEntries) => logEntries.concat(savedEntry));
-      setNewEntry({
-        title: '',
-        description: '',
-        comment: '',
-        rating: '',
-        latitude: '',
-        longitude: '',
-        visitDate: '',
+    if (user === null) {
+      setErrorMsg({ message: 'please login!', color: 'red' });
+      console.log(errorMsg);
+      setTimeout(() => {
+        setErrorMsg(null);
+      }, 5000);
+    } else {
+      api.createEntry(newEntry).then((savedEntry) => {
+        console.log(savedEntry);
+        setLogEntries((logEntries) => logEntries.concat(savedEntry));
+        setNewEntry({
+          title: '',
+          description: '',
+          comment: '',
+          rating: '',
+          latitude: '',
+          longitude: '',
+          visitDate: '',
+        });
+        setAddEntryLocation(null);
       });
-      setAddEntryLocation(null);
-    });
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const user = await loginService.login({ username, password });
+      window.localStorage.setItem('loggedUser', JSON.stringify(user));
+      api.setToken(user.token);
+      setUser(user);
+      setUsername('');
+      setPassword('');
+    } catch (error) {
+      console.log('error logging in');
+    }
+  };
+
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedUser');
+    setUser(null);
   };
 
   return (
@@ -84,89 +127,85 @@ const App = () => {
       {/* map through log entries and place marker at coords */}
       {logEntries.map((entry) => (
         <div key={entry.id} onClick={() => setShowPopup({ [entry.id]: true })}>
-          <Marker latitude={entry.latitude} longitude={entry.longitude}>
-            <svg
-              className="marker yellow"
-              style={{
-                width: '24px',
-                height: '24px',
-              }}
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle fill="#f8c102" cx="12" cy="10" r="3"></circle>
-            </svg>
-          </Marker>
+          <EntryMarker
+            latitude={entry.latitude}
+            longitude={entry.longitude}
+            className={'marker yellow'}
+            color={'#f8c102'}
+          />
           {showPopup[entry.id] ? (
-            <div className="popup">
-              <Popup
-                latitude={entry.latitude}
-                longitude={entry.longitude}
-                closeButton={true}
-                closeOnClick={true}
-                dynamicPosition={true}
-                onClose={() => setShowPopup({})}
-                anchor="top">
-                <div>
-                  <h3>{entry.title}</h3>
-                  <p>{entry.description}</p>
-                  <small>
-                    Visited on: {new Date(entry.visitDate).toLocaleDateString()}
-                  </small>
-                </div>
-              </Popup>
-            </div>
+            <EntryPopup
+              latitude={entry.latitude}
+              longitude={entry.longitude}
+              closeOnClick={true}
+              onClose={() => setShowPopup({})}
+              entry={entry}>
+              <div>
+                <h3>{entry.title}</h3>
+                <p>{entry.description}</p>
+                <small>
+                  <span>
+                    Visit date: {new Date(entry.visitDate).toLocaleDateString()}
+                  </span>
+                </small>
+              </div>
+            </EntryPopup>
           ) : null}
         </div>
       ))}
       <>
         {addEntryLocation ? (
           <div>
-            <Marker
-              latitude={addEntryLocation.latitude}
-              longitude={addEntryLocation.longitude}>
-              <svg
-                className="marker red"
-                style={{
-                  width: '24px',
-                  height: '24px',
-                }}
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle fill="#f05305" cx="12" cy="10" r="3"></circle>
-              </svg>
-            </Marker>
-            <Popup
+            <EntryMarker
               latitude={addEntryLocation.latitude}
               longitude={addEntryLocation.longitude}
-              closeButton={true}
+              className={'marker red'}
+              color={'#f05305'}
+            />
+            <EntryPopup
+              latitude={addEntryLocation.latitude}
+              longitude={addEntryLocation.longitude}
               closeOnClick={false}
-              dynamicPosition={true}
-              onClose={() => setAddEntryLocation(null)}
-              anchor="top">
+              onClose={() => setAddEntryLocation(null)}>
               <NewEntryForm
                 newEntry={newEntry}
                 handleFormChange={handleFormChange}
                 saveEntry={saveEntry}
+                errorMsg={errorMsg}
               />
-            </Popup>
+            </EntryPopup>
           </div>
         ) : null}
       </>
-      <div
-        style={{
-          width: '200px',
-          height: '300px',
-          backgroundColor: 'green',
-          float: 'right',
-        }}></div>
+      <div className="login-form">
+        {user ? (
+          <div>
+            {user.username}
+            <button onClick={handleLogout}>logout</button>
+          </div>
+        ) : null}
+        <form onSubmit={handleLogin}>
+          <div>
+            username:
+            <input
+              type="text"
+              value={username}
+              name="username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div>
+            password:
+            <input
+              type="password"
+              value={password}
+              name="password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
     </ReactMapGL>
   );
 };
