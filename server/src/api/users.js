@@ -12,20 +12,26 @@ usersRouter.get('/', async (req, res, next) => {
   }
 });
 
-usersRouter.post('/', async (req, res) => {
+usersRouter.post('/', async (req, res, next) => {
   const body = req.body;
 
-  const saltRounds = 10;
-  const passwordHash = await bcrypt.hash(body.password, saltRounds);
+  try {
+    if (body.password1 !== body.password2) {
+      throw new TypeError('Password doesnt match.');
+    }
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(body.password, saltRounds);
+    const user = new User({
+      username: body.username,
+      passwordHash,
+    });
 
-  const user = new User({
-    username: body.username,
-    passwordHash,
-  });
+    const savedUser = await user.save();
 
-  const savedUser = await user.save();
-
-  res.json(savedUser);
+    res.json(savedUser);
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = usersRouter;

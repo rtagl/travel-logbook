@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import ReactMapGL from 'react-map-gl';
 
-import * as api from './API';
+import * as api from './api/API';
 import loginService from './api/login';
 import EntryMarker from './components/EntryMarker';
 import EntryPopup from './components/EntryPopup';
 import NewEntryForm from './components/NewEntryForm';
+import LoginTab from './components/LoginTab';
+import SignUpTab from './components/SignUpTab';
 
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const [signUpView, setSignUpView] = useState(false);
+  const [newUser, setNewUser] = useState({
+    username: '',
+    password1: '',
+    password2: '',
+  });
   const [errorMsg, setErrorMsg] = useState(null);
   const [logEntries, setLogEntries] = useState([]);
   const [showPopup, setShowPopup] = useState({});
@@ -76,7 +84,6 @@ const App = () => {
     console.log(newEntry, 'this is a new entry');
     if (user === null) {
       setErrorMsg({ message: 'please login!', color: 'red' });
-      console.log(errorMsg);
       setTimeout(() => {
         setErrorMsg(null);
       }, 5000);
@@ -115,6 +122,23 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
+  };
+
+  const handleShowSignUpView = () => {
+    setSignUpView(!signUpView);
+  };
+
+  const handleSignUpFields = (event) => {
+    const value = event.target.value;
+    setNewUser({
+      ...newUser,
+      [event.target.name]: value,
+    });
+  };
+
+  const handleSignUp = (event) => {
+    event.preventDefault();
+    console.log(newUser);
   };
 
   return (
@@ -178,33 +202,25 @@ const App = () => {
         ) : null}
       </>
       <div className="login-form">
-        {user ? (
-          <div>
-            {user.username}
-            <button onClick={handleLogout}>logout</button>
-          </div>
-        ) : null}
-        <form onSubmit={handleLogin}>
-          <div>
-            username:
-            <input
-              type="text"
-              value={username}
-              name="username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password:
-            <input
-              type="password"
-              value={password}
-              name="password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
+        {signUpView ? (
+          <SignUpTab
+            newUser={newUser}
+            handleSignUpFields={handleSignUpFields}
+            handleShowSignUpView={handleShowSignUpView}
+            handleSignUp={handleSignUp}
+          />
+        ) : (
+          <LoginTab
+            user={user}
+            handleLogout={handleLogout}
+            handleLogin={handleLogin}
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleShowSignUpView={handleShowSignUpView}
+          />
+        )}
       </div>
     </ReactMapGL>
   );

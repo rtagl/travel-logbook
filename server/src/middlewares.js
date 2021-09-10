@@ -13,6 +13,10 @@ const errorHandler = (error, req, res, next) => {
     return res.status(401).json({
       error: 'token expired',
     });
+  } else if (error.name === 'TypeError') {
+    return res.status(400).json({
+      message: error.message,
+    });
   }
 
   next(error);
