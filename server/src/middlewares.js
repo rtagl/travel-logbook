@@ -6,7 +6,8 @@ const notFound = (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (error, req, res, next) => {
   if (error.name === 'ValidationError') {
-    return res.status(400).json({ error: error.message });
+    console.log('validation error', error.message);
+    return res.status(400).json({ message: error.message });
   } else if (error.name === 'JsonWebTokenError') {
     return res.status(401).json({ message: 'Please login!' });
   } else if (error.name === 'TokenExpiredError') {
@@ -14,8 +15,9 @@ const errorHandler = (error, req, res, next) => {
       error: 'token expired',
     });
   } else if (error.name === 'TypeError') {
-    return res.status(400).json({
-      message: error.message,
+    console.log('typeError', error.message);
+    return res.status(400).send({
+      message: 'Password does not match',
     });
   }
 

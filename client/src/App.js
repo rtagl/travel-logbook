@@ -3,6 +3,7 @@ import ReactMapGL from 'react-map-gl';
 
 import * as api from './api/API';
 import loginService from './api/login';
+import signUpService from './api/signup';
 import EntryMarker from './components/EntryMarker';
 import EntryPopup from './components/EntryPopup';
 import NewEntryForm from './components/NewEntryForm';
@@ -136,9 +137,18 @@ const App = () => {
     });
   };
 
-  const handleSignUp = (event) => {
+  const handleSignUp = async (event) => {
     event.preventDefault();
+    newUser.password = newUser.password1;
     console.log(newUser);
+    signUpService
+      .createAccount(newUser)
+      .then((createdUser) => {
+        console.log(createdUser, 'new user has been created!');
+      })
+      .catch((error) => {
+        console.log('error signing up: ', error.response.data.message);
+      });
   };
 
   return (
