@@ -21,3 +21,10 @@ export const createEntry = async (newEntry) => {
   });
   return response.json();
 };
+
+export const deleteEntry = async (entryId) => {
+  const response = await fetch(`${API_URL}/api/logs/${entryId}`, {
+    method: 'DELETE',
+  });
+  return response.json();
+};

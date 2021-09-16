@@ -4,42 +4,47 @@ const LoginTab = ({
   handleLogin,
   username,
   password,
+  errorMsg,
   handleUsernameChange,
   handlePasswordChange,
-  handleShowSignUpView,
+  handleSignUpView,
 }) => {
   return (
     <div>
+      {errorMsg && errorMsg.type === 'Login Error' ? (
+        <div style={{ color: errorMsg.color }}>{errorMsg.message}</div>
+      ) : null}
       {user ? (
         <div>
           {user.username}
           <button onClick={handleLogout}>logout</button>
         </div>
-      ) : null}
-      <form onSubmit={handleLogin}>
-        <div>
-          username:
-          <input
-            type="text"
-            value={username}
-            name="username"
-            onChange={handleUsernameChange}
-          />
-        </div>
-        <div>
-          password:
-          <input
-            type="password"
-            value={password}
-            name="password"
-            onChange={handlePasswordChange}
-          />
-        </div>
-        <button type="submit">Login</button>
-        <button type="button" onClick={handleShowSignUpView}>
-          Sign Up
-        </button>
-      </form>
+      ) : (
+        <form onSubmit={handleLogin}>
+          <div>
+            username:
+            <input
+              type="text"
+              value={username}
+              name="username"
+              onChange={handleUsernameChange}
+            />
+          </div>
+          <div>
+            password:
+            <input
+              type="password"
+              value={password}
+              name="password"
+              onChange={handlePasswordChange}
+            />
+          </div>
+          <button type="submit">Login</button>
+          <button type="button" onClick={handleSignUpView}>
+            Sign Up
+          </button>
+        </form>
+      )}
     </div>
   );
 };

@@ -1,12 +1,16 @@
 const SignUpTab = ({
   handleSignUp,
-  handleShowSignUpView,
+  handleSignUpView,
   handleSignUpFields,
+  errorMsg,
   newUser,
 }) => {
   return (
     <div>
-      <button type="button" onClick={handleShowSignUpView}>
+      {errorMsg && errorMsg.type === 'Signup Error' ? (
+        <div style={{ color: errorMsg.color }}>{errorMsg.message}</div>
+      ) : null}
+      <button type="button" onClick={handleSignUpView}>
         Go Back
       </button>
       <form onSubmit={handleSignUp}>

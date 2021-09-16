@@ -23,10 +23,24 @@ body {
   stroke: #f05305;
 }
 
-.login-form {
+.control-panel {
   background-color: rgb(245, 229, 229);
   float: left;
   width: 200px;
   height: 150px;
   padding: 20px;
+  position: absolute;
+  z-index: 99999;
+}
+
+.popup {
+  position: static;
+  z-index: 1;
+}
+
+.user-svg {
+  background-color: black;
+  margin: 15px;
+  position: absolute;
+  z-index: 9999;
 }

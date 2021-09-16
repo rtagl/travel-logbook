@@ -9,6 +9,7 @@ const EntryPopup = ({
 }) => {
   return (
     <Popup
+      className="popup"
       latitude={latitude}
       longitude={longitude}
       closeButton={true}

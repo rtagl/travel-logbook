@@ -3,7 +3,7 @@ import React from 'react';
 const NewEntryForm = ({ newEntry, handleFormChange, saveEntry, errorMsg }) => {
   return (
     <div>
-      {errorMsg ? (
+      {errorMsg && errorMsg.type === 'Entry Error' ? (
         <div style={{ color: errorMsg.color }}>{errorMsg.message}</div>
       ) : null}
       <form onSubmit={saveEntry}>
