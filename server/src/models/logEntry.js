@@ -37,6 +37,7 @@ const logEntrySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    username: String,
   },
   { timestamps: true }
 );

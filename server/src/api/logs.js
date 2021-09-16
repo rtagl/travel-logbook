@@ -35,6 +35,7 @@ logsRouter.post('/', async (req, res, next) => {
     const user = await User.findById(decodedToken.id);
     const logEntry = new LogEntry(body);
     logEntry.user = user._id;
+    logEntry.username = user.username;
     const createdEntry = await logEntry.save();
     user.logEntries = user.logEntries.concat(createdEntry._id);
     await user.save();
@@ -42,6 +43,13 @@ logsRouter.post('/', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+logsRouter.delete('/:id', (req, res, next) => {
+  LogEntry.findByIdAndRemove({ _id: req.params.id }).then((entry) => {
+    console.log(entry);
+    res.send(entry);
+  });
 });
 
 module.exports = logsRouter;
