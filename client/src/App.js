@@ -179,7 +179,7 @@ const App = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Delete Entry?')) {
+    if (window.confirm('Are you sure you want to delete this entry?')) {
       api.deleteEntry(id).then((deletedEntry) => {
         setLogEntries(logEntries.filter((entry) => entry.id !== id));
       });
