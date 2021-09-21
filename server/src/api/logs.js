@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const logsRouter = require('express').Router();
 
-const LogEntry = require('../models/logEntry');
-const User = require('../models/user');
+const LogEntry = require('../models/LogEntry');
+const User = require('../models/User');
 
 const getTokenFrom = (request) => {
   const authorization = request.get('authorization');
