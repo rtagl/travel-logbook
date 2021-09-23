@@ -11,7 +11,7 @@ const EntryDescription = ({ entry, user, handleDelete }) => {
           <span>Submitted by: {entry.username}</span>
         </div>
       </small>
-      {entry.username === user.username ? (
+      {user && entry.username === user.username ? (
         <button onClick={() => handleDelete(entry.id)}>Delete</button>
       ) : null}
     </div>

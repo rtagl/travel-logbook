@@ -1,50 +1,43 @@
 const LoginTab = ({
-  user,
-  handleLogout,
   handleLogin,
   username,
   password,
   errorMsg,
   handleUsernameChange,
   handlePasswordChange,
-  handleSignUpView,
 }) => {
   return (
     <div>
-      {errorMsg && errorMsg.type === 'Login Error' ? (
-        <div style={{ color: errorMsg.color }}>{errorMsg.message}</div>
-      ) : null}
-      {user ? (
-        <div>
-          {user.username}
-          <button onClick={handleLogout}>logout</button>
-        </div>
-      ) : (
-        <form onSubmit={handleLogin}>
-          <div>
-            username:
-            <input
-              type="text"
-              value={username}
-              name="username"
-              onChange={handleUsernameChange}
-            />
-          </div>
-          <div>
-            password:
-            <input
-              type="password"
-              value={password}
-              name="password"
-              onChange={handlePasswordChange}
-            />
-          </div>
-          <button type="submit">Login</button>
-          <button type="button" onClick={handleSignUpView}>
-            Sign Up
-          </button>
-        </form>
-      )}
+      <form onSubmit={handleLogin}>
+        <h2>Log In</h2>
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          value={username}
+          name="username"
+          onChange={handleUsernameChange}
+          required
+        />
+
+        {errorMsg && errorMsg.errorType === 'usernameError' ? (
+          <div className="username error">{errorMsg.message}</div>
+        ) : null}
+
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          value={password}
+          name="password"
+          onChange={handlePasswordChange}
+          required
+        />
+
+        {errorMsg && errorMsg.errorType === 'passwordError' ? (
+          <div className="password error">{errorMsg.message}</div>
+        ) : null}
+
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 };

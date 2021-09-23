@@ -1,47 +1,45 @@
 const SignUpTab = ({
   handleSignUp,
-  handleSignUpView,
   handleSignUpFields,
   errorMsg,
   newUser,
+  setShowLoginView,
+  showLoginView,
 }) => {
   return (
     <div>
-      {errorMsg && errorMsg.type === 'Signup Error' ? (
-        <div style={{ color: errorMsg.color }}>{errorMsg.message}</div>
-      ) : null}
-      <button type="button" onClick={handleSignUpView}>
-        Go Back
-      </button>
       <form onSubmit={handleSignUp}>
+        <h2>Sign Up</h2>
+
+        <label htmlFor="username">Username</label>
+        <input
+          type="text"
+          value={newUser.username}
+          name="username"
+          onChange={handleSignUpFields}
+        />
+
+        {errorMsg && errorMsg.errorType === 'signupError' ? (
+          <div className="error">{errorMsg.username}</div>
+        ) : null}
+
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          value={newUser.password}
+          name="password"
+          onChange={handleSignUpFields}
+        />
+        {errorMsg && errorMsg.errorType === 'signupError' ? (
+          <div className="error">{errorMsg.password}</div>
+        ) : null}
         <div>
-          Username:
-          <input
-            type="text"
-            value={newUser.username}
-            name="username"
-            onChange={handleSignUpFields}
-          />
+          <button type="submit">Sign Up!</button>
+          or{' '}
+          <a href="/" onClick={() => setShowLoginView(!showLoginView)}>
+            Log In
+          </a>
         </div>
-        <div>
-          Password:
-          <input
-            type="password"
-            value={newUser.password1}
-            name="password1"
-            onChange={handleSignUpFields}
-          />
-        </div>
-        <div>
-          Re-type Password:
-          <input
-            type="password"
-            value={newUser.password2}
-            name="password2"
-            onChange={handleSignUpFields}
-          />
-        </div>
-        <button type="submit">Sign Up!</button>
       </form>
     </div>
   );

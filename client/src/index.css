@@ -1,11 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   width: 100vw;
   height: 100vh;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
   overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+ul,
+li,
+a,
+p,
+input,
+label,
+button,
+div,
+footer {
+  margin: 0;
+  padding: 0;
+  font-family: 'Quicksand', sans-serif;
+  color: #444;
 }
 
 .marker {
@@ -23,11 +43,18 @@ body {
   stroke: #f05305;
 }
 
+.error {
+  color: #ff0099;
+  margin: 10px 2px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
 .control-panel {
-  background-color: rgb(245, 229, 229);
-  float: left;
-  width: 200px;
-  height: 150px;
+  /* background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)); */
+  background-color: rgb(45, 54, 155);
+  width: 100vw;
+  height: 100vh;
   padding: 20px;
   position: absolute;
   z-index: 99999;
@@ -39,8 +66,89 @@ body {
 }
 
 .user-svg {
-  background-color: black;
+  background-color: rgb(45, 54, 155);
   margin: 15px;
   position: absolute;
   z-index: 9999;
+}
+
+form h2 {
+  font-size: 2.4em;
+  font-weight: 900;
+  margin-bottom: 40px;
+}
+form {
+  width: 360px;
+  margin: 0 auto;
+  padding: 20px;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: white;
+}
+input {
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 1em;
+  width: 90%;
+  margin-bottom: 0px;
+}
+label {
+  display: block;
+  margin: 20px 0 10px;
+}
+button {
+  border-radius: 36px;
+  background: #fee996;
+  border: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8em;
+  padding: 10px 16px;
+  letter-spacing: 2px;
+}
+
+form button {
+  margin-top: 30px;
+}
+
+.signup-btn {
+  margin-left: 15px;
+}
+
+.navbar {
+  background-color: rgb(45, 54, 155);
+  position: absolute;
+  z-index: 99999;
+  height: 60px;
+  width: 100%;
+}
+
+.container {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.navbar .flex {
+  justify-content: space-between;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.nav-buttons {
+  display: flex;
+}
+
+.nav-buttons button {
+  margin: 0 10px;
+}
+
+.nav-buttons button:hover {
+  background-color: #fef3c5;
 }

@@ -1,13 +1,15 @@
+import axios from 'axios';
 const API_URL = 'http://localhost:3001';
 
 let token = null;
+
 export const setToken = (newToken) => {
   token = `bearer ${newToken}`;
 };
 
 export const getAll = async () => {
-  const response = await fetch(`${API_URL}/api/logs`);
-  return response.json();
+  const response = await axios.get(`${API_URL}/api/logs`);
+  return response.data;
 };
 
 export const createEntry = async (newEntry) => {

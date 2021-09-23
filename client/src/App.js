@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import ReactMapGL from 'react-map-gl';
 
 import * as api from './api/API';
@@ -10,31 +11,32 @@ import NewEntryForm from './components/NewEntryForm';
 import LoginTab from './components/LoginTab';
 import SignUpTab from './components/SignUpTab';
 import EntryDescription from './components/EntryDescription';
+import Navbar from './components/Navbar';
 
 const App = () => {
-  const [loginView, toggleLoginView] = useState(false);
+  const [showLoginView, setShowLoginView] = useState(false);
+  const [showSignupView, setShowSignupView] = useState(false);
+  const [logoutButton, setLogoutButton] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [signUpView, setSignUpView] = useState(false);
   const [newUser, setNewUser] = useState({
     username: '',
-    password1: '',
-    password2: '',
+    password: '',
   });
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [errorMsg, setErrorMsg] = useState({});
   const [logEntries, setLogEntries] = useState([]);
   const [showPopup, setShowPopup] = useState({});
   const [addEntryLocation, setAddEntryLocation] = useState(null);
   const [newEntry, setNewEntry] = useState({
     title: '',
     description: '',
-    comment: '',
     rating: '',
     latitude: '',
     longitude: '',
     visitDate: '',
   });
+
   // initialize map settings and focal point
   const [viewport, setViewport] = useState({
     width: '100vw',
@@ -43,6 +45,7 @@ const App = () => {
     longitude: -98.5795,
     zoom: 4,
   });
+
   // fetch log entries from the server
   useEffect(() => {
     (async () => {
@@ -52,11 +55,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedUser');
+    const loggedUserJSON = window.localStorage.getItem('user');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
-      api.setToken(user.token);
     }
   }, []);
 
@@ -83,62 +85,46 @@ const App = () => {
 
   const saveEntry = (e) => {
     e.preventDefault();
-    if (user === null) {
-      setErrorMsg({
-        type: 'Entry Error',
-        message: 'please login!',
-        color: 'red',
+    api.createEntry(newEntry).then((savedEntry) => {
+      console.log(savedEntry);
+      setNewEntry({
+        title: '',
+        description: '',
+        rating: '',
+        latitude: '',
+        longitude: '',
+        visitDate: '',
       });
-      setTimeout(() => {
-        setErrorMsg(null);
-      }, 5000);
-    } else {
-      api.createEntry(newEntry).then((savedEntry) => {
-        console.log(savedEntry);
-        setNewEntry({
-          title: '',
-          description: '',
-          comment: '',
-          rating: '',
-          latitude: '',
-          longitude: '',
-          visitDate: '',
-        });
-        setLogEntries((logEntries) => logEntries.concat(savedEntry));
-        setAddEntryLocation(null);
-      });
-    }
+      setLogEntries((logEntries) => logEntries.concat(savedEntry));
+      setAddEntryLocation(null);
+    });
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const user = await loginService.login({ username, password });
-      window.localStorage.setItem('loggedUser', JSON.stringify(user));
+      window.localStorage.setItem('user', JSON.stringify(user));
       api.setToken(user.token);
       setUser(user);
+      setErrorMsg({});
       setUsername('');
       setPassword('');
-      toggleLoginView(false);
     } catch (error) {
-      setErrorMsg({
-        type: 'Login Error',
-        message: error.response.data.message,
-        color: 'red',
-      });
-      setTimeout(() => {
-        setErrorMsg(null);
-      }, 5000);
+      setErrorMsg(error.response.data);
     }
   };
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedUser');
+    setErrorMsg({});
+    window.localStorage.removeItem('user');
     setUser(null);
   };
 
   const handleSignUpView = () => {
-    setSignUpView(!signUpView);
+    setErrorMsg({});
+    setUsername('');
+    setPassword('');
   };
 
   const handleSignUpFields = (event) => {
@@ -149,32 +135,26 @@ const App = () => {
     });
   };
 
+  const toggleLogoutButton = () => {
+    setLogoutButton(!logoutButton);
+  };
+
   const handleSignUp = async (event) => {
     event.preventDefault();
-    newUser.password = newUser.password1;
     signUpService
       .createAccount(newUser)
       .then((createdUser) => {
-        console.log(createdUser, 'createdUser');
-        window.localStorage.setItem('loggedUser', JSON.stringify(createdUser));
+        setErrorMsg({});
+        window.localStorage.setItem('user', JSON.stringify(createdUser));
         api.setToken(createdUser.token);
         setUser(createdUser);
         setNewUser({
           username: '',
-          password1: '',
-          password2: '',
+          password: '',
         });
-        setSignUpView(false);
       })
       .catch((error) => {
-        setErrorMsg({
-          type: 'Signup Error',
-          message: error.response.data.message,
-          color: 'red',
-        });
-        setTimeout(() => {
-          setErrorMsg(null);
-        }, 5000);
+        setErrorMsg(error.response.data);
       });
   };
 
@@ -185,122 +165,155 @@ const App = () => {
       });
     }
   };
+  const ratingChanged = (newRating) => {
+    setNewEntry({ ...newEntry, rating: newRating });
+  };
+
+  const handleLoginView = () => {
+    setShowLoginView(!showLoginView);
+  };
+
+  const handleSignupView = () => {
+    setShowSignupView(!showSignupView);
+  };
+
+  const handleHomeView = () => {
+    setShowSignupView(false);
+    setShowLoginView(false);
+  };
 
   return (
-    <ReactMapGL
-      style={{ position: 'static', zIndex: -100 }}
-      {...viewport}
-      mapStyle="mapbox://styles/technogicksta/cksrkyy9u29ck17o3ueyx3d7n"
-      mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-      onDblClick={showAddMarkerPopup}
-      onViewportChange={(viewport) => setViewport(viewport)}>
-      {/* map through log entries and place marker at coords */}
-      {logEntries.map((entry) => (
-        <div key={entry.id} onClick={() => setShowPopup({ [entry.id]: true })}>
-          <EntryMarker
-            latitude={entry.latitude}
-            longitude={entry.longitude}
-            className={'marker yellow'}
-            color={'#f8c102'}
-          />
-          {showPopup[entry.id] ? (
-            <EntryPopup
+    <Router>
+      <Navbar
+        handleLoginView={handleLoginView}
+        handleSignupView={handleSignupView}
+        handleHomeView={handleHomeView}
+      />
+      <ReactMapGL
+        style={{ position: 'static', zIndex: -100 }}
+        {...viewport}
+        mapStyle="mapbox://styles/technogicksta/cksrkyy9u29ck17o3ueyx3d7n"
+        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+        onDblClick={showAddMarkerPopup}
+        onViewportChange={(viewport) => setViewport(viewport)}>
+        {logEntries.map((entry) => (
+          <div
+            key={entry.id}
+            onClick={() => setShowPopup({ [entry.id]: true })}>
+            <EntryMarker
               latitude={entry.latitude}
               longitude={entry.longitude}
-              closeOnClick={false}
-              onClose={() => setShowPopup({})}>
-              <EntryDescription
-                entry={entry}
-                user={user}
-                handleDelete={handleDelete}
-              />
-            </EntryPopup>
-          ) : null}
-        </div>
-      ))}
-      <>
-        {addEntryLocation ? (
-          <div>
-            <EntryMarker
-              latitude={addEntryLocation.latitude}
-              longitude={addEntryLocation.longitude}
-              className="marker red"
-              color="#f05305"
+              className={'marker yellow'}
+              color={'#f8c102'}
             />
-            <EntryPopup
-              latitude={addEntryLocation.latitude}
-              longitude={addEntryLocation.longitude}
-              closeOnClick={false}
-              onClose={() => setAddEntryLocation(null)}>
-              <NewEntryForm
-                newEntry={newEntry}
-                handleFormChange={handleFormChange}
-                saveEntry={saveEntry}
-                errorMsg={errorMsg}
-              />
-            </EntryPopup>
+            {showPopup[entry.id] ? (
+              <EntryPopup
+                latitude={entry.latitude}
+                longitude={entry.longitude}
+                closeOnClick={false}
+                onClose={() => setShowPopup({})}>
+                <EntryDescription
+                  entry={entry}
+                  user={user}
+                  handleDelete={handleDelete}
+                />
+              </EntryPopup>
+            ) : null}
           </div>
-        ) : null}
-      </>
-      {!loginView ? (
-        <div className="user-svg" onClick={() => toggleLoginView(!loginView)}>
-          <svg
-            viewBox="0 0 24 24"
-            width="42"
-            height="42"
-            stroke="white"
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          {user ? (
-            <div
-              style={{
-                color: 'white',
-                fontsize: '16px',
-              }}>
-              {user.username}
+        ))}
+        <>
+          {addEntryLocation ? (
+            <div>
+              <EntryMarker
+                latitude={addEntryLocation.latitude}
+                longitude={addEntryLocation.longitude}
+                className="marker red"
+                color="#f05305"
+              />
+              <EntryPopup
+                latitude={addEntryLocation.latitude}
+                longitude={addEntryLocation.longitude}
+                closeOnClick={false}
+                onClose={() => setAddEntryLocation(null)}>
+                <NewEntryForm
+                  newEntry={newEntry}
+                  handleFormChange={handleFormChange}
+                  saveEntry={saveEntry}
+                  errorMsg={errorMsg}
+                  ratingChanged={ratingChanged}
+                />
+              </EntryPopup>
             </div>
           ) : null}
-        </div>
-      ) : (
-        <div className="control-panel">
-          <button
-            onClick={() => toggleLoginView(!loginView)}
-            style={{
-              float: 'right',
-              borderRadius: '100%',
-            }}>
-            x
-          </button>
-          {signUpView ? (
-            <SignUpTab
-              newUser={newUser}
-              errorMsg={errorMsg}
-              handleSignUpFields={handleSignUpFields}
-              handleSignUpView={handleSignUpView}
-              handleSignUp={handleSignUp}
-            />
-          ) : (
+        </>
+        {showLoginView ? (
+          <div className="control-panel">
             <LoginTab
-              user={user}
-              handleLogout={handleLogout}
               handleLogin={handleLogin}
               username={username}
               password={password}
               errorMsg={errorMsg}
               handleUsernameChange={({ target }) => setUsername(target.value)}
               handlePasswordChange={({ target }) => setPassword(target.value)}
-              handleSignUpView={handleSignUpView}
             />
-          )}
-        </div>
-      )}
-    </ReactMapGL>
+          </div>
+        ) : null}
+
+        {showSignupView ? (
+          <div>
+            <SignUpTab
+              newUser={newUser}
+              errorMsg={errorMsg}
+              handleSignUpFields={handleSignUpFields}
+              handleSignUp={handleSignUp}
+              handleSignupView={handleSignupView}
+            />
+          </div>
+        ) : null}
+      </ReactMapGL>
+    </Router>
   );
 };
 
 export default App;
+
+//   !loginView ? (
+//     <button
+//       className="user-svg"
+//       onClick={() => toggleLoginView(!loginView)}>
+//       <svg
+//         viewBox="0 0 24 24"
+//         width="42"
+//         height="42"
+//         stroke="#fee996"
+//         strokeWidth="3"
+//         fill="none"
+//         strokeLinecap="round"
+//         strokeLinejoin="round">
+//         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+//         <circle cx="12" cy="7" r="4"></circle>
+//       </svg>
+//       {user ? (
+//         <>
+//           <div
+//             style={{
+//               color: '#f8c102',
+//               fontSize: '1rem',
+//             }}
+//             onClick={toggleLogoutButton}>
+//             {user.username.length > 8
+//               ? user.username.substring(0, 8) + '...'
+//               : user.username}
+//           </div>
+//           <div>
+//             {logoutButton ? (
+//               <button onClick={handleLogout}>Log out</button>
+//             ) : null}
+//           </div>
+//         </>
+//       ) : null}
+//     </button>
+//   ) : (
+
+//   );
+// }
