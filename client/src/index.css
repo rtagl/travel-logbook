@@ -141,3 +141,7 @@ form button {
 .nav-buttons button:hover {
   background-color: #fef3c5;
 }
+
+.nav-buttons h4 {
+  color: #fee996;
+}

@@ -18,14 +18,16 @@ const NewEntryForm = ({
           onChange={handleFormChange}
         />
         {errorMsg && errorMsg.errorType === 'newLogError' ? (
-          <div>{errorMsg.title}</div>
+          <div className="error">{errorMsg.title}</div>
         ) : null}
+
         <label htmlFor="description">Description</label>
         <input
           name="description"
           value={newEntry.description}
           onChange={handleFormChange}
         />
+
         <label htmlFor="rating">Rating</label>
         <ReactStars
           name="rating"
@@ -35,7 +37,7 @@ const NewEntryForm = ({
           activeColor="#ffd700"
         />
         {errorMsg && errorMsg.errorType === 'newLogError' ? (
-          <div>{errorMsg.title}</div>
+          <div className="error">{errorMsg.rating}</div>
         ) : null}
 
         <label htmlFor="visitDate">Visit Date</label>
@@ -46,8 +48,9 @@ const NewEntryForm = ({
           onChange={handleFormChange}
         />
         {errorMsg && errorMsg.errorType === 'newLogError' ? (
-          <div>{errorMsg.visitDate}</div>
+          <div className="error">{errorMsg.visitDate}</div>
         ) : null}
+
         <button type="submit">Save</button>
       </form>
     </div>

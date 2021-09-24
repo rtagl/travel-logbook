@@ -13,7 +13,6 @@ const NewLogEntry = ({
   newEntry,
   addEntryLocation,
 }) => {
-  console.log(addEntryLocation);
   return (
     <>
       <EntryMarker

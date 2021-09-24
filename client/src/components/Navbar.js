@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ user, handleLogout }) => {
   return (
     <div className="navbar">
       <div className="container flex">
@@ -22,14 +22,21 @@ const Navbar = () => {
             </svg>
           </div>
         </Link>
-        <div className="nav-buttons">
-          <Link to="/login">
-            <button>Log In</button>
-          </Link>
-          <Link to="/signup">
-            <button>Sign Up</button>
-          </Link>
-        </div>
+        {user ? (
+          <div className="nav-buttons flex">
+            <h4>Welcome, {user.username}</h4>
+            <button onClick={handleLogout}>Log out</button>
+          </div>
+        ) : (
+          <div className="nav-buttons">
+            <Link to="/login">
+              <button>Log In</button>
+            </Link>
+            <Link to="/signup">
+              <button>Sign Up</button>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,18 @@
 import { Marker } from 'react-map-gl';
 
-const EntryMarker = ({ latitude, longitude, color, onClick, children }) => {
+const EntryMarker = ({
+  latitude,
+  longitude,
+  color,
+  onClick,
+  children,
+  className,
+}) => {
   return (
     <div onClick={onClick}>
       <Marker latitude={latitude} longitude={longitude}>
         <svg
-          className={'marker yellow'}
+          className={className}
           viewBox="0 0 24 24"
           stroke={color}
           strokeWidth="2"

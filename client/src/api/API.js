@@ -13,15 +13,14 @@ export const getAll = async () => {
 };
 
 export const createEntry = async (newEntry) => {
-  const response = await fetch(`${API_URL}/api/logs`, {
-    method: 'POST',
+  console.log(newEntry);
+  const response = await axios.post(`${API_URL}/api/logs`, newEntry, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token,
     },
-    body: JSON.stringify(newEntry),
   });
-  return response.json();
+  return response.data;
 };
 
 export const deleteEntry = async (entryId) => {

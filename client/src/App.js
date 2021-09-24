@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import ReactMapGL from 'react-map-gl';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import * as api from './api/API';
 import loginService from './api/login';
@@ -71,24 +70,34 @@ const App = () => {
 
   const saveEntry = (e) => {
     e.preventDefault();
-    api.createEntry(newEntry).then((savedEntry) => {
-      console.log(savedEntry);
-      setNewEntry({
-        title: '',
-        description: '',
-        rating: '',
-        latitude: '',
-        longitude: '',
-        visitDate: '',
+    if (user) {
+      api.setToken(user.token);
+    }
+    api
+      .createEntry(newEntry)
+      .then((savedEntry) => {
+        console.log(savedEntry);
+        setNewEntry({
+          title: '',
+          description: '',
+          rating: '',
+          latitude: '',
+          longitude: '',
+          visitDate: '',
+        });
+        setLogEntries((logEntries) => logEntries.concat(savedEntry));
+        setAddEntryLocation(null);
+      })
+      .catch((error) => {
+        setErrorMsg(error.response.data);
       });
-      setLogEntries((logEntries) => logEntries.concat(savedEntry));
-      setAddEntryLocation(null);
-    });
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
+      console.log({ username, password });
       const user = await loginService.login({ username, password });
       window.localStorage.setItem('user', JSON.stringify(user));
       api.setToken(user.token);
@@ -136,7 +145,7 @@ const App = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this entry?')) {
-      api.deleteEntry(id).then((deletedEntry) => {
+      api.deleteEntry(id).then((response) => {
         setLogEntries(logEntries.filter((entry) => entry.id !== id));
       });
     }
@@ -148,7 +157,7 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar />
+      <Navbar user={user} handleLogout={handleLogout} />
 
       <Switch>
         <Route path="/login">
@@ -174,9 +183,17 @@ const App = () => {
         <Route path="/">
           <MapView showAddMarkerPopup={showAddMarkerPopup}>
             {logEntries.map((entry) => (
-              <LogEntry key={entry.id} entry={entry} color={'#f8c102'} />
+              // children: EntryMarker, EntryPopup, EntryDescription
+              <LogEntry
+                key={entry.id}
+                user={user}
+                entry={entry}
+                color={'#f8c102'}
+                handleDelete={handleDelete}
+              />
             ))}
             {addEntryLocation ? (
+              // children: EntryMarker, EntryPopup, NewEntryForm
               <NewLogEntry
                 onClose={() => setAddEntryLocation(null)}
                 saveEntry={saveEntry}
@@ -185,6 +202,7 @@ const App = () => {
                 handleFormChange={handleFormChange}
                 newEntry={newEntry}
                 addEntryLocation={addEntryLocation}
+                user={user}
               />
             ) : null}
           </MapView>
@@ -195,44 +213,3 @@ const App = () => {
 };
 
 export default App;
-
-//   !loginView ? (
-//     <button
-//       className="user-svg"
-//       onClick={() => toggleLoginView(!loginView)}>
-//       <svg
-//         viewBox="0 0 24 24"
-//         width="42"
-//         height="42"
-//         stroke="#fee996"
-//         strokeWidth="3"
-//         fill="none"
-//         strokeLinecap="round"
-//         strokeLinejoin="round">
-//         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-//         <circle cx="12" cy="7" r="4"></circle>
-//       </svg>
-//       {user ? (
-//         <>
-//           <div
-//             style={{
-//               color: '#f8c102',
-//               fontSize: '1rem',
-//             }}
-//             onClick={toggleLogoutButton}>
-//             {user.username.length > 8
-//               ? user.username.substring(0, 8) + '...'
-//               : user.username}
-//           </div>
-//           <div>
-//             {logoutButton ? (
-//               <button onClick={handleLogout}>Log out</button>
-//             ) : null}
-//           </div>
-//         </>
-//       ) : null}
-//     </button>
-//   ) : (
-
-//   );
-// }

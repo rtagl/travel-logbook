@@ -1,11 +1,6 @@
-const SignupTab = ({
-  handleSignUp,
-  handleSignUpFields,
-  errorMsg,
-  newUser,
-  setShowLoginView,
-  showLoginView,
-}) => {
+import { Link } from 'react-router-dom';
+
+const SignupTab = ({ handleSignUp, handleSignUpFields, errorMsg, newUser }) => {
   return (
     <div className="auth-form">
       <form onSubmit={handleSignUp}>
@@ -35,10 +30,7 @@ const SignupTab = ({
         ) : null}
         <div>
           <button type="submit">Sign Up!</button>
-          or{' '}
-          <a href="/" onClick={() => setShowLoginView(!showLoginView)}>
-            Log In
-          </a>
+          or <Link to="/login">Log In</Link>
         </div>
       </form>
     </div>

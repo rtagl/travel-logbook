@@ -1,6 +1,7 @@
 const EntryDescription = ({ entry, user, handleDelete }) => {
+  console.log(entry, user);
   return (
-    <div>
+    <div className="entry-description">
       <h3>{entry.title}</h3>
       <p>{entry.description}</p>
       <small>
