@@ -10,6 +10,7 @@ const NewLogEntry = ({
   errorMsg,
   ratingChanged,
   handleFormChange,
+  handleUploadChange,
   newEntry,
   addEntryLocation,
 }) => {
@@ -29,6 +30,7 @@ const NewLogEntry = ({
         <NewEntryForm
           newEntry={newEntry}
           handleFormChange={handleFormChange}
+          handleUploadChange={handleUploadChange}
           saveEntry={saveEntry}
           errorMsg={errorMsg}
           ratingChanged={ratingChanged}

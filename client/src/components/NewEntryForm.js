@@ -4,6 +4,7 @@ import ReactStars from 'react-rating-stars-component';
 const NewEntryForm = ({
   newEntry,
   handleFormChange,
+  handleUploadChange,
   saveEntry,
   errorMsg,
   ratingChanged,
@@ -26,6 +27,14 @@ const NewEntryForm = ({
           name="description"
           value={newEntry.description}
           onChange={handleFormChange}
+        />
+
+        <label htmlFor="image">Select image:</label>
+        <input
+          type="file"
+          name="image"
+          onChange={handleUploadChange}
+          accept="image/*"
         />
 
         <label htmlFor="rating">Rating</label>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import axios from 'axios';
 
 import * as api from './api/API';
 import loginService from './api/login';
@@ -22,9 +23,11 @@ const App = () => {
   const [errorMsg, setErrorMsg] = useState({});
   const [logEntries, setLogEntries] = useState([]);
   const [addEntryLocation, setAddEntryLocation] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [newEntry, setNewEntry] = useState({
     title: '',
     description: '',
+    image: '',
     rating: '',
     latitude: '',
     longitude: '',
@@ -43,6 +46,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('user');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
+      api.setToken(user.token);
       setUser(user);
     }
   }, []);
@@ -70,27 +74,60 @@ const App = () => {
 
   const saveEntry = (e) => {
     e.preventDefault();
-    if (user) {
-      api.setToken(user.token);
-    }
-    api
-      .createEntry(newEntry)
-      .then((savedEntry) => {
-        console.log(savedEntry);
-        setNewEntry({
-          title: '',
-          description: '',
-          rating: '',
-          latitude: '',
-          longitude: '',
-          visitDate: '',
+
+    if (selectedFile !== null) {
+      const CL_URL = process.env.REACT_APP_CL_URL;
+      const CL_UPLOAD_PRESET = process.env.REACT_APP_CL_PRESET;
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('upload_preset', CL_UPLOAD_PRESET);
+      console.log(formData);
+      axios
+        .post(CL_URL, formData)
+        .then((response) => {
+          return api.createEntry({ ...newEntry, image: response.data.url });
+        })
+        .then((savedEntry) => {
+          setNewEntry({
+            title: '',
+            description: '',
+            image: '',
+            rating: '',
+            latitude: '',
+            longitude: '',
+            visitDate: '',
+          });
+          setLogEntries((logEntries) => logEntries.concat(savedEntry));
+          setAddEntryLocation(null);
+        })
+        .catch((error) => {
+          setErrorMsg(error.response.data);
         });
-        setLogEntries((logEntries) => logEntries.concat(savedEntry));
-        setAddEntryLocation(null);
-      })
-      .catch((error) => {
-        setErrorMsg(error.response.data);
-      });
+    } else {
+      api
+        .createEntry(newEntry)
+        .then((savedEntry) => {
+          console.log(savedEntry);
+          setNewEntry({
+            title: '',
+            description: '',
+            image: '',
+            rating: '',
+            latitude: '',
+            longitude: '',
+            visitDate: '',
+          });
+          setLogEntries((logEntries) => logEntries.concat(savedEntry));
+          setAddEntryLocation(null);
+        })
+        .catch((error) => {
+          setErrorMsg(error.response.data);
+        });
+    }
+  };
+
+  const handleUploadChange = (e) => {
+    setSelectedFile(e.target.files[0]);
   };
 
   const handleLogin = async (e) => {
@@ -199,6 +236,7 @@ const App = () => {
                 saveEntry={saveEntry}
                 errorMsg={errorMsg}
                 ratingChanged={ratingChanged}
+                handleUploadChange={handleUploadChange}
                 handleFormChange={handleFormChange}
                 newEntry={newEntry}
                 addEntryLocation={addEntryLocation}
