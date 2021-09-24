@@ -1,13 +1,13 @@
 import { Marker } from 'react-map-gl';
 
-const EntryMarker = ({ latitude, longitude, className, color }) => {
+const EntryMarker = ({ latitude, longitude, color, onClick, children }) => {
   return (
-    <div>
+    <div onClick={onClick}>
       <Marker latitude={latitude} longitude={longitude}>
         <svg
-          className={className}
+          className={'marker yellow'}
           viewBox="0 0 24 24"
-          stroke="currentColor"
+          stroke={color}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round">
@@ -15,6 +15,7 @@ const EntryMarker = ({ latitude, longitude, className, color }) => {
           <circle fill={color} cx="12" cy="10" r="3"></circle>
         </svg>
       </Marker>
+      {children}
     </div>
   );
 };

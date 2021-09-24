@@ -50,14 +50,11 @@ footer {
   font-weight: bold;
 }
 
-.control-panel {
-  /* background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)); */
+.auth-form {
   background-color: rgb(45, 54, 155);
   width: 100vw;
   height: 100vh;
   padding: 20px;
-  position: absolute;
-  z-index: 99999;
 }
 
 .popup {
@@ -65,18 +62,12 @@ footer {
   z-index: 1;
 }
 
-.user-svg {
-  background-color: rgb(45, 54, 155);
-  margin: 15px;
-  position: absolute;
-  z-index: 9999;
-}
-
 form h2 {
   font-size: 2.4em;
   font-weight: 900;
   margin-bottom: 40px;
 }
+
 form {
   width: 360px;
   margin: 0 auto;
@@ -118,8 +109,6 @@ form button {
 
 .navbar {
   background-color: rgb(45, 54, 155);
-  position: absolute;
-  z-index: 99999;
   height: 60px;
   width: 100%;
 }

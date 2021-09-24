@@ -1,4 +1,4 @@
-const SignUpTab = ({
+const SignupTab = ({
   handleSignUp,
   handleSignUpFields,
   errorMsg,
@@ -7,7 +7,7 @@ const SignUpTab = ({
   showLoginView,
 }) => {
   return (
-    <div>
+    <div className="auth-form">
       <form onSubmit={handleSignUp}>
         <h2>Sign Up</h2>
 
@@ -45,4 +45,4 @@ const SignUpTab = ({
   );
 };
 
-export default SignUpTab;
+export default SignupTab;

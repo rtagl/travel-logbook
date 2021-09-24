@@ -5,18 +5,14 @@ import ReactMapGL from 'react-map-gl';
 import * as api from './api/API';
 import loginService from './api/login';
 import signUpService from './api/signup';
-import EntryMarker from './components/EntryMarker';
-import EntryPopup from './components/EntryPopup';
-import NewEntryForm from './components/NewEntryForm';
 import LoginTab from './components/LoginTab';
-import SignUpTab from './components/SignUpTab';
-import EntryDescription from './components/EntryDescription';
+import SignupTab from './components/SignupTab';
 import Navbar from './components/Navbar';
+import MapView from './components/MapView';
+import LogEntry from './components/LogEntry';
+import NewLogEntry from './components/NewLogEntry';
 
 const App = () => {
-  const [showLoginView, setShowLoginView] = useState(false);
-  const [showSignupView, setShowSignupView] = useState(false);
-  const [logoutButton, setLogoutButton] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -26,7 +22,6 @@ const App = () => {
   });
   const [errorMsg, setErrorMsg] = useState({});
   const [logEntries, setLogEntries] = useState([]);
-  const [showPopup, setShowPopup] = useState({});
   const [addEntryLocation, setAddEntryLocation] = useState(null);
   const [newEntry, setNewEntry] = useState({
     title: '',
@@ -35,15 +30,6 @@ const App = () => {
     latitude: '',
     longitude: '',
     visitDate: '',
-  });
-
-  // initialize map settings and focal point
-  const [viewport, setViewport] = useState({
-    width: '100vw',
-    height: '100vh',
-    latitude: 39.8283,
-    longitude: -98.5795,
-    zoom: 4,
   });
 
   // fetch log entries from the server
@@ -121,22 +107,12 @@ const App = () => {
     setUser(null);
   };
 
-  const handleSignUpView = () => {
-    setErrorMsg({});
-    setUsername('');
-    setPassword('');
-  };
-
   const handleSignUpFields = (event) => {
     const value = event.target.value;
     setNewUser({
       ...newUser,
       [event.target.name]: value,
     });
-  };
-
-  const toggleLogoutButton = () => {
-    setLogoutButton(!logoutButton);
   };
 
   const handleSignUp = async (event) => {
@@ -165,112 +141,55 @@ const App = () => {
       });
     }
   };
+
   const ratingChanged = (newRating) => {
     setNewEntry({ ...newEntry, rating: newRating });
   };
 
-  const handleLoginView = () => {
-    setShowLoginView(!showLoginView);
-  };
-
-  const handleSignupView = () => {
-    setShowSignupView(!showSignupView);
-  };
-
-  const handleHomeView = () => {
-    setShowSignupView(false);
-    setShowLoginView(false);
-  };
-
   return (
     <Router>
-      <Navbar
-        handleLoginView={handleLoginView}
-        handleSignupView={handleSignupView}
-        handleHomeView={handleHomeView}
-      />
-      <ReactMapGL
-        style={{ position: 'static', zIndex: -100 }}
-        {...viewport}
-        mapStyle="mapbox://styles/technogicksta/cksrkyy9u29ck17o3ueyx3d7n"
-        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-        onDblClick={showAddMarkerPopup}
-        onViewportChange={(viewport) => setViewport(viewport)}>
-        {logEntries.map((entry) => (
-          <div
-            key={entry.id}
-            onClick={() => setShowPopup({ [entry.id]: true })}>
-            <EntryMarker
-              latitude={entry.latitude}
-              longitude={entry.longitude}
-              className={'marker yellow'}
-              color={'#f8c102'}
-            />
-            {showPopup[entry.id] ? (
-              <EntryPopup
-                latitude={entry.latitude}
-                longitude={entry.longitude}
-                closeOnClick={false}
-                onClose={() => setShowPopup({})}>
-                <EntryDescription
-                  entry={entry}
-                  user={user}
-                  handleDelete={handleDelete}
-                />
-              </EntryPopup>
-            ) : null}
-          </div>
-        ))}
-        <>
-          {addEntryLocation ? (
-            <div>
-              <EntryMarker
-                latitude={addEntryLocation.latitude}
-                longitude={addEntryLocation.longitude}
-                className="marker red"
-                color="#f05305"
-              />
-              <EntryPopup
-                latitude={addEntryLocation.latitude}
-                longitude={addEntryLocation.longitude}
-                closeOnClick={false}
-                onClose={() => setAddEntryLocation(null)}>
-                <NewEntryForm
-                  newEntry={newEntry}
-                  handleFormChange={handleFormChange}
-                  saveEntry={saveEntry}
-                  errorMsg={errorMsg}
-                  ratingChanged={ratingChanged}
-                />
-              </EntryPopup>
-            </div>
-          ) : null}
-        </>
-        {showLoginView ? (
-          <div className="control-panel">
-            <LoginTab
-              handleLogin={handleLogin}
-              username={username}
-              password={password}
-              errorMsg={errorMsg}
-              handleUsernameChange={({ target }) => setUsername(target.value)}
-              handlePasswordChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-        ) : null}
+      <Navbar />
 
-        {showSignupView ? (
-          <div>
-            <SignUpTab
-              newUser={newUser}
-              errorMsg={errorMsg}
-              handleSignUpFields={handleSignUpFields}
-              handleSignUp={handleSignUp}
-              handleSignupView={handleSignupView}
-            />
-          </div>
-        ) : null}
-      </ReactMapGL>
+      <Switch>
+        <Route path="/login">
+          <LoginTab
+            handleLogin={handleLogin}
+            username={username}
+            password={password}
+            errorMsg={errorMsg}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+          />
+        </Route>
+
+        <Route path="/signup">
+          <SignupTab
+            newUser={newUser}
+            errorMsg={errorMsg}
+            handleSignUpFields={handleSignUpFields}
+            handleSignUp={handleSignUp}
+          />
+        </Route>
+
+        <Route path="/">
+          <MapView showAddMarkerPopup={showAddMarkerPopup}>
+            {logEntries.map((entry) => (
+              <LogEntry key={entry.id} entry={entry} color={'#f8c102'} />
+            ))}
+            {addEntryLocation ? (
+              <NewLogEntry
+                onClose={() => setAddEntryLocation(null)}
+                saveEntry={saveEntry}
+                errorMsg={errorMsg}
+                ratingChanged={ratingChanged}
+                handleFormChange={handleFormChange}
+                newEntry={newEntry}
+                addEntryLocation={addEntryLocation}
+              />
+            ) : null}
+          </MapView>
+        </Route>
+      </Switch>
     </Router>
   );
 };
