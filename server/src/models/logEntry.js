@@ -6,19 +6,20 @@ const logEntrySchema = new Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: [true, 'A title is required.'],
     },
     description: String,
     image: String,
     rating: {
       type: Number,
-      min: 0,
-      max: 10,
-      default: 0,
+      min: 1,
+      max: 5,
+      default: 1,
+      required: [true, 'A rating is required.'],
     },
     visitDate: {
       type: Date,
-      required: true,
+      required: [true, 'A visit date is required.'],
     },
     latitude: {
       type: Number,

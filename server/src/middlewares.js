@@ -5,7 +5,8 @@ const notFound = (req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (error, req, res, next) => {
-  console.log(error);
+  console.log('helllllllllo');
+  console.log(error.message, error.code);
   const validationErrors = {};
 
   if (error.message === 'Username does not exist.') {
@@ -18,6 +19,22 @@ const errorHandler = (error, req, res, next) => {
     return res
       .status(400)
       .json({ message: error.message, errorType: 'passwordError' });
+  }
+
+  if (error.code === 11000) {
+    return res.status(400).json({
+      username: 'Username already exists.',
+      errorType: 'signupError',
+    });
+  }
+
+  if (error.message.includes('LogEntry validation failed')) {
+    Object.values(error.errors).forEach(({ properties }) => {
+      validationErrors[properties.path] = properties.message;
+    });
+    return res
+      .status(400)
+      .json({ ...validationErrors, errorType: 'newLogError' });
   }
 
   if (error.message.includes('User validation failed')) {

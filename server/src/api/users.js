@@ -22,12 +22,15 @@ usersRouter.post('/', async (req, res, next) => {
   const { username, password } = req.body;
 
   try {
-    const user = await User.create({ username, password });
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const user = await User.create({ username, password: passwordHash });
+    console.log(user, 'userRouter user');
     const token = createToken(user._id);
-    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(201).json({ user: user._id });
+    console.log(token, 'userRouter token');
+    res.status(201).json({ id: user._id, username: user.username, token });
   } catch (error) {
-    console.log(error, '/api/users post request error');
+    console.log(error, 'error userRouter');
     next(error);
   }
 });

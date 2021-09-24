@@ -14,7 +14,7 @@ const getTokenFrom = (request) => {
 
 logsRouter.get('/', async (req, res, next) => {
   try {
-    const entries = await LogEntry.find().populate('user', { username: 1 });
+    const entries = await LogEntry.find({}).populate('user', { username: 1 });
     res.json(entries);
   } catch (error) {
     next(error);
@@ -22,16 +22,10 @@ logsRouter.get('/', async (req, res, next) => {
 });
 
 logsRouter.post('/', async (req, res, next) => {
-  console.log(req.body);
-  // if (!token || !decodedToken.id) {
-  //   return res.status(401).json({ error: 'token missing or invalid' });
-  // }
-
   try {
     const body = req.body;
     const token = getTokenFrom(req);
     const decodedToken = jwt.verify(token, process.env.SECRET);
-    console.log(decodedToken, 'decoded token');
     const user = await User.findById(decodedToken.id);
     const logEntry = new LogEntry(body);
     logEntry.user = user._id;
@@ -47,7 +41,6 @@ logsRouter.post('/', async (req, res, next) => {
 
 logsRouter.delete('/:id', (req, res, next) => {
   LogEntry.findByIdAndRemove({ _id: req.params.id }).then((entry) => {
-    console.log(entry);
     res.send(entry);
   });
 });

@@ -6,8 +6,8 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   username: {
     type: String,
-    required: [true, 'Please enter a username.'],
     unique: true,
+    required: [true, 'Please enter a username.'],
   },
   password: {
     type: String,
@@ -22,17 +22,13 @@ const userSchema = new Schema({
   ],
 });
 
-userSchema.pre('save', async function (next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
-
-// static method to login user
-userSchema.statics.login = async function (username, password) {
+// static method to log in user
+userSchema.statics.login = async (username, password) => {
   const user = await User.findOne({ username });
+
   if (user) {
-    const auth = bcrypt.compare(password, user.password);
+    const auth = await bcrypt.compare(password, user.password);
+    console.log(auth);
     if (auth) {
       return user;
     }
@@ -40,16 +36,6 @@ userSchema.statics.login = async function (username, password) {
   }
   throw Error('Username does not exist.');
 };
-
-// userSchema.set('toJSON', {
-//   transform: (document, returnedObject) => {
-//     returnedObject.id = returnedObject._id.toString();
-//     delete returnedObject._id;
-//     delete returnedObject.__v;
-//     // the passwordHash should not be revealed
-//     delete returnedObject.passwordHash;
-//   },
-// });
 
 const User = mongoose.model('User', userSchema);
 
