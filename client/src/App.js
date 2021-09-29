@@ -81,7 +81,6 @@ const App = () => {
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('upload_preset', CL_UPLOAD_PRESET);
-      console.log(formData);
       axios
         .post(CL_URL, formData)
         .then((response) => {
