@@ -13,7 +13,6 @@ export const getAll = async () => {
 };
 
 export const createEntry = async (newEntry) => {
-  console.log(newEntry);
   const response = await axios.post(`${API_URL}/api/logs`, newEntry, {
     headers: {
       'Content-Type': 'application/json',

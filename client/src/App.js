@@ -13,6 +13,7 @@ import LogEntry from './components/LogEntry';
 import NewLogEntry from './components/NewLogEntry';
 
 const App = () => {
+  const [showPopup, setShowPopup] = useState({});
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -106,7 +107,6 @@ const App = () => {
       api
         .createEntry(newEntry)
         .then((savedEntry) => {
-          console.log(savedEntry);
           setNewEntry({
             title: '',
             description: '',
@@ -133,7 +133,6 @@ const App = () => {
     e.preventDefault();
 
     try {
-      console.log({ username, password });
       const user = await loginService.login({ username, password });
       window.localStorage.setItem('user', JSON.stringify(user));
       api.setToken(user.token);
@@ -225,6 +224,8 @@ const App = () => {
                 user={user}
                 entry={entry}
                 color={'#f8c102'}
+                showPopup={showPopup}
+                setShowPopup={setShowPopup}
                 handleDelete={handleDelete}
               />
             ))}

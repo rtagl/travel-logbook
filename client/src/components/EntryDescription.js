@@ -1,20 +1,39 @@
+import ReactStars from 'react-rating-stars-component';
+
 const EntryDescription = ({ entry, user, handleDelete }) => {
-  console.log(entry, user);
   return (
-    <div className="entry-description">
-      <h3>{entry.title}</h3>
-      <p>{entry.description}</p>
-      <small>
-        <span>
-          Visit date: {new Date(entry.visitDate).toLocaleDateString()}
-        </span>
-        <div>
-          <span>Submitted by: {entry.username}</span>
+    <div>
+      {entry.image ? (
+        <div className="entry-image">
+          <img src={entry.image} alt="" />
         </div>
-      </small>
-      {user && entry.username === user.username ? (
-        <button onClick={() => handleDelete(entry.id)}>Delete</button>
       ) : null}
+      <div className="entry-description">
+        <h3>{entry.title}</h3>
+        <div className="rating">
+          <ReactStars
+            count={5}
+            size={12}
+            edit={false}
+            value={entry.rating}
+            activeColor="#f8c102"
+          />
+        </div>
+        <span>{new Date(entry.visitDate).toLocaleDateString()}</span>
+        <div className="comments">
+          <p>{entry.description}</p>
+        </div>
+        <div>
+          <span>Submitted By: {entry.username}</span>
+        </div>
+        {user && entry.username === user.username ? (
+          <button
+            className="delete-button"
+            onClick={() => handleDelete(entry.id)}>
+            Delete
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 };

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import EntryMarker from './EntryMarker';
 import EntryPopup from './EntryPopup';
 import EntryDescription from './EntryDescription';
 
-const LogEntry = ({ entry, user, handleDelete }) => {
-  const [showPopup, setShowPopup] = useState({});
+const LogEntry = ({ entry, user, handleDelete, showPopup, setShowPopup }) => {
   return (
     <EntryMarker
       latitude={entry.latitude}

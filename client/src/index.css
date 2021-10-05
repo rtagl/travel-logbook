@@ -58,6 +58,7 @@ footer {
 }
 
 .popup {
+  max-width: 250px;
   position: static;
   z-index: 1;
 }
@@ -144,4 +145,66 @@ form button {
 
 .nav-buttons h4 {
   color: #fee996;
+}
+
+.entry-image img {
+  object-fit: cover;
+  width: 100%;
+  height: 175px;
+}
+
+.mapboxgl-popup-content {
+  padding: 0px;
+}
+
+.mapboxgl-popup-close-button {
+  background-color: black;
+  margin: 4px;
+  color: white;
+  border-radius: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  height: 15px;
+  padding-left: 18px;
+}
+
+.mapboxgl-popup-close-button:hover {
+  background-color: rgb(72, 72, 72);
+}
+
+.entry-description {
+  max-width: 100%;
+  padding: 5px 15px 15px 15px;
+}
+
+.entry-description h3 {
+  color: black;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+.comments {
+  font-size: 1rem;
+}
+
+.entry-description span {
+  font-size: 0.8rem;
+}
+
+.delete-button {
+  background-color: #fa0a4a;
+  margin-top: 10px;
+  padding: 6px;
+  border-radius: px;
+}
+
+.delete-button:hover {
+  background-color: #ff66ad;
+}
+
+.rating {
+  margin-top: 3px;
 }
