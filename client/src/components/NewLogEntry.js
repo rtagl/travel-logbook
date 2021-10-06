@@ -11,6 +11,7 @@ const NewLogEntry = ({
   ratingChanged,
   handleFormChange,
   handleUploadChange,
+  selectedFile,
   newEntry,
   addEntryLocation,
 }) => {
@@ -28,6 +29,7 @@ const NewLogEntry = ({
         closeOnClick={false}
         onClose={onClose}>
         <NewEntryForm
+          selectedFile={selectedFile}
           newEntry={newEntry}
           handleFormChange={handleFormChange}
           handleUploadChange={handleUploadChange}

@@ -3,15 +3,25 @@ import ReactStars from 'react-rating-stars-component';
 
 const NewEntryForm = ({
   newEntry,
+  selectedFile,
   handleFormChange,
   handleUploadChange,
   saveEntry,
   errorMsg,
   ratingChanged,
 }) => {
+  const hiddenFileInput = React.useRef(null);
+  const handleClick = (e) => {
+    e.preventDefault();
+    hiddenFileInput.current.click();
+  };
+
   return (
     <div>
       <form onSubmit={saveEntry}>
+        {errorMsg && errorMsg.errorType === 'authError' ? (
+          <div className="error">{errorMsg.message}</div>
+        ) : null}
         <label htmlFor="title">Title</label>
         <input
           name="title"
@@ -29,12 +39,21 @@ const NewEntryForm = ({
           onChange={handleFormChange}
         />
 
-        <label htmlFor="image">Select image:</label>
+        <button className="upload-btn" onClick={handleClick}>
+          Upload Image
+        </button>
+        {selectedFile ? (
+          <span className="filename">{selectedFile.name}</span>
+        ) : (
+          <span className="filename">Choose a file</span>
+        )}
         <input
           type="file"
           name="image"
+          ref={hiddenFileInput}
           onChange={handleUploadChange}
           accept="image/*"
+          style={{ display: 'none' }}
         />
 
         <label htmlFor="rating">Rating</label>

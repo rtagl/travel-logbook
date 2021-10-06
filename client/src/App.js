@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import * as api from './api/API';
@@ -13,6 +13,7 @@ import LogEntry from './components/LogEntry';
 import NewLogEntry from './components/NewLogEntry';
 
 const App = () => {
+  const history = useHistory();
   const [showPopup, setShowPopup] = useState({});
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -140,6 +141,7 @@ const App = () => {
       setErrorMsg({});
       setUsername('');
       setPassword('');
+      history.push({ pathname: '/' });
     } catch (error) {
       setErrorMsg(error.response.data);
     }
@@ -148,6 +150,7 @@ const App = () => {
   const handleLogout = () => {
     setErrorMsg({});
     window.localStorage.removeItem('user');
+    api.setToken(null);
     setUser(null);
   };
 
@@ -172,6 +175,7 @@ const App = () => {
           username: '',
           password: '',
         });
+        history.push({ pathname: '/' });
       })
       .catch((error) => {
         setErrorMsg(error.response.data);
@@ -191,7 +195,7 @@ const App = () => {
   };
 
   return (
-    <Router>
+    <>
       <Navbar user={user} handleLogout={handleLogout} />
 
       <Switch>
@@ -234,6 +238,7 @@ const App = () => {
               <NewLogEntry
                 onClose={() => setAddEntryLocation(null)}
                 saveEntry={saveEntry}
+                selectedFile={selectedFile}
                 errorMsg={errorMsg}
                 ratingChanged={ratingChanged}
                 handleUploadChange={handleUploadChange}
@@ -246,7 +251,7 @@ const App = () => {
           </MapView>
         </Route>
       </Switch>
-    </Router>
+    </>
   );
 };
 

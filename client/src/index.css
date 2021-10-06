@@ -154,6 +154,7 @@ form button {
 }
 
 .mapboxgl-popup-content {
+  width: 400px;
   padding: 0px;
 }
 
@@ -207,4 +208,12 @@ form button {
 
 .rating {
   margin-top: 3px;
+}
+
+.filename {
+  margin-left: 10px;
+}
+
+.upload-btn {
+  margin-top: 20px;
 }
