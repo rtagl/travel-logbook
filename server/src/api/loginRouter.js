@@ -5,7 +5,6 @@ const User = require('../models/User');
 
 loginRouter.post('/', async (req, res, next) => {
   const { username, password } = req.body;
-  console.log(username, password);
   try {
     const user = await User.login(username, password);
 

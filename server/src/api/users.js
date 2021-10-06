@@ -25,12 +25,9 @@ usersRouter.post('/', async (req, res, next) => {
     const saltRounds = 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
     const user = await User.create({ username, password: passwordHash });
-    console.log(user, 'userRouter user');
     const token = createToken(user._id);
-    console.log(token, 'userRouter token');
     res.status(201).json({ id: user._id, username: user.username, token });
   } catch (error) {
-    console.log(error, 'error userRouter');
     next(error);
   }
 });

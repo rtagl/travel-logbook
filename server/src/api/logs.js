@@ -24,8 +24,8 @@ logsRouter.get('/', async (req, res, next) => {
 logsRouter.post('/', async (req, res, next) => {
   try {
     const body = req.body;
-    console.log(body);
     const token = getTokenFrom(req);
+    console.log(token);
     const decodedToken = jwt.verify(token, process.env.SECRET);
     const user = await User.findById(decodedToken.id);
     const logEntry = new LogEntry(body);

@@ -5,7 +5,6 @@ const notFound = (req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (error, req, res, next) => {
-  console.log('helllllllllo');
   console.log(error.message, error.code);
   const validationErrors = {};
 
@@ -26,6 +25,12 @@ const errorHandler = (error, req, res, next) => {
       username: 'Username already exists.',
       errorType: 'signupError',
     });
+  }
+
+  if (error.message === 'jwt must be provided') {
+    return res
+      .status(400)
+      .json({ message: 'Please login!', errorType: 'authError' });
   }
 
   if (error.message.includes('LogEntry validation failed')) {
