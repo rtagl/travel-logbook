@@ -20,11 +20,12 @@ const EntryDescription = ({ entry, user, handleDelete }) => {
           />
         </div>
         <span>{new Date(entry.visitDate).toLocaleDateString()}</span>
+        <hr />
         <div className="comments">
           <p>{entry.description}</p>
         </div>
         <div>
-          <span>Submitted By: {entry.username}</span>
+          <span>By: {entry.username}</span>
         </div>
         {user && entry.username === user.username ? (
           <button
