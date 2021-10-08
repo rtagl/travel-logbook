@@ -3,7 +3,11 @@ import MapGL from 'react-map-gl';
 import Geocoder from 'react-map-gl-geocoder';
 import useWindowSize from '../hooks/windowResize';
 
-const MapView = ({ showAddMarkerPopup, children }) => {
+const MapView = ({
+  showAddMarkerPopup,
+  showAddMarkerPopupGeoCode,
+  children,
+}) => {
   // initialize map settings and focal point
   const { width, height } = useWindowSize();
   const [viewport, setViewport] = useState({
@@ -15,6 +19,7 @@ const MapView = ({ showAddMarkerPopup, children }) => {
   });
   const mapRef = useRef();
 
+  // set viewport to map dimensions
   useEffect(() => {
     setViewport({ ...viewport, height, width });
   }, [height, width]);
@@ -24,6 +29,7 @@ const MapView = ({ showAddMarkerPopup, children }) => {
     []
   );
 
+  // transition to new coordinate when using search bar
   const handleGeocoderViewportChange = useCallback(
     (newViewport) => {
       const geocoderDefaultOverrides = { transitionDuration: 1000 };
@@ -44,13 +50,16 @@ const MapView = ({ showAddMarkerPopup, children }) => {
         mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
         onDblClick={showAddMarkerPopup}
         onViewportChange={(viewport) => setViewport(viewport)}>
-        <Geocoder
-          mapRef={mapRef}
-          marker={false}
-          onViewportChange={handleGeocoderViewportChange}
-          mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-          position="top-left"
-        />
+        <div className="geocoder">
+          <Geocoder
+            mapRef={mapRef}
+            marker={false}
+            onResult={showAddMarkerPopupGeoCode}
+            onViewportChange={handleGeocoderViewportChange}
+            mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+            position="top-left"
+          />
+        </div>
         {children}
       </MapGL>
     </div>

@@ -58,6 +58,7 @@ const NewEntryForm = ({
 
         <label htmlFor="rating">Rating</label>
         <ReactStars
+          className="stars"
           name="rating"
           count={5}
           onChange={ratingChanged}

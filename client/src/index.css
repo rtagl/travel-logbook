@@ -143,6 +143,68 @@ form button:hover {
   margin: 0 10px;
 }
 
+@media only screen and (max-width: 500px) {
+  .nav-buttons button {
+    font-size: 0.7em;
+    padding: 5px 12px;
+    letter-spacing: 1px;
+    margin: 0 5px;
+  }
+  .welcome {
+    font-size: 1rem;
+  }
+  .container {
+    padding: 0px 12px;
+  }
+  .logo svg {
+    width: 32px;
+    height: 32px;
+  }
+  .geocoder {
+    width: 100%;
+  }
+  form {
+    margin: 0 0 0 0;
+    width: 300px;
+    padding: 15px;
+  }
+  .auth-form {
+    width: 335px;
+    margin: 0px 0px 0px 0px;
+  }
+  input {
+    padding: 8px 10px;
+    font-size: 0.9em;
+    width: 90%;
+    margin-bottom: 0px;
+  }
+  form button {
+    margin-top: 15px;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    padding: 6px 14px;
+  }
+  .filename {
+    font-size: 0.8rem;
+  }
+  .react-stars span {
+    font-size: 20px !important;
+  }
+  form label {
+    margin-bottom: 7px;
+    margin-top: 15px;
+  }
+  #root
+    > div:nth-child(2)
+    > div
+    > div
+    > div.mapboxgl-map
+    > div.mapboxgl-control-container
+    > div.mapboxgl-ctrl-top-left {
+    margin-left: 30px;
+  }
+}
+
 .nav-buttons button:hover {
   background-color: #fef3c5;
 }

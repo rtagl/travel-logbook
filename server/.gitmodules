@@ -1,0 +1,4 @@
+[submodule "travel-logbook"]
+	path = travel-logbook
+	url = https://github.com/rtagl/travel-logbook.git
+	branch = master

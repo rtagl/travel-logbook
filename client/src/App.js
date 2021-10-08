@@ -44,6 +44,7 @@ const App = () => {
     })();
   }, []);
 
+  // check if user is already logged in
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('user');
     if (loggedUserJSON) {
@@ -53,8 +54,25 @@ const App = () => {
     }
   }, []);
 
+  // set coordinates to new entry to location of double click
   const showAddMarkerPopup = (event) => {
+    console.log(event);
     const [longitude, latitude] = event.lngLat;
+    setAddEntryLocation({
+      longitude,
+      latitude,
+    });
+    setNewEntry({
+      ...newEntry,
+      latitude,
+      longitude,
+    });
+  };
+
+  // if using search bar set result coordinates to new popup
+  const showAddMarkerPopupGeoCode = (event) => {
+    console.log(event);
+    const [longitude, latitude] = event.result.center;
     setAddEntryLocation({
       longitude,
       latitude,
@@ -78,11 +96,13 @@ const App = () => {
     e.preventDefault();
 
     if (selectedFile !== null) {
+      // create form with image data to upload to cloudinary
       const CL_URL = process.env.REACT_APP_CL_URL;
       const CL_UPLOAD_PRESET = process.env.REACT_APP_CL_PRESET;
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('upload_preset', CL_UPLOAD_PRESET);
+      // post image to cloudinary and send response to server
       axios
         .post(CL_URL, formData)
         .then((response) => {
@@ -105,6 +125,7 @@ const App = () => {
           setErrorMsg(error.response.data);
         });
     } else {
+      // if no image is present send entry data directly to server
       api
         .createEntry(newEntry)
         .then((savedEntry) => {
@@ -126,6 +147,7 @@ const App = () => {
     }
   };
 
+  // select first image
   const handleUploadChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
@@ -220,7 +242,9 @@ const App = () => {
         </Route>
 
         <Route path="/">
-          <MapView showAddMarkerPopup={showAddMarkerPopup}>
+          <MapView
+            showAddMarkerPopup={showAddMarkerPopup}
+            showAddMarkerPopupGeoCode={showAddMarkerPopupGeoCode}>
             {logEntries.map((entry) => (
               // children: EntryMarker, EntryPopup, EntryDescription
               <LogEntry

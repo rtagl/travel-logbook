@@ -23,7 +23,6 @@ const Navbar = ({ user, handleLogout }) => {
         </Link>
         {user ? (
           <div className="nav-buttons flex">
-            <h4>Welcome, {user.username}</h4>
             <button onClick={handleLogout}>Log out</button>
           </div>
         ) : (
