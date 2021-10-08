@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_URL = 'http://localhost:3001';
+const API_URL = '/api/logs';
 
 let token = null;
 
@@ -8,12 +8,12 @@ export const setToken = (newToken) => {
 };
 
 export const getAll = async () => {
-  const response = await axios.get(`${API_URL}/api/logs`);
+  const response = await axios.get(`${API_URL}`);
   return response.data;
 };
 
 export const createEntry = async (newEntry) => {
-  const response = await axios.post(`${API_URL}/api/logs`, newEntry, {
+  const response = await axios.post(`${API_URL}`, newEntry, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: token,
@@ -23,7 +23,7 @@ export const createEntry = async (newEntry) => {
 };
 
 export const deleteEntry = async (entryId) => {
-  const response = await fetch(`${API_URL}/api/logs/${entryId}`, {
+  const response = await fetch(`${API_URL}/${entryId}`, {
     method: 'DELETE',
   });
   return response.json();
