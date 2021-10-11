@@ -30,7 +30,9 @@ const SignupTab = ({ handleSignUp, handleSignUpFields, errorMsg, newUser }) => {
         ) : null}
         <div>
           <button type="submit">Sign Up!</button>
-          or <Link to="/login">Log In</Link>
+          <span style={{ marginLeft: '10px' }}>
+            or <Link to="/login">Log In</Link>
+          </span>
         </div>
       </form>
     </div>

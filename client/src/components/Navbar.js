@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = ({ user, handleLogout }) => {
+const Navbar = ({ user, handleLogout, userLogEntries, setUserLogEntries }) => {
+  const toggleFilter = () => {
+    setUserLogEntries(!userLogEntries);
+  };
+
   return (
     <div className="navbar">
       <div className="container flex">
@@ -23,6 +27,9 @@ const Navbar = ({ user, handleLogout }) => {
         </Link>
         {user ? (
           <div className="nav-buttons flex">
+            <button onClick={toggleFilter}>
+              {userLogEntries ? 'Show All Entries' : 'Show My Entries'}
+            </button>
             <button onClick={handleLogout}>Log out</button>
           </div>
         ) : (

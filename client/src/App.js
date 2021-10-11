@@ -6,7 +6,7 @@ import * as api from './api/API';
 import loginService from './api/login';
 import signUpService from './api/signup';
 import LoginTab from './components/LoginTab';
-import SignupTab from './components/SignupTab';
+import SignupTab from './components/SignUpTab';
 import Navbar from './components/Navbar';
 import MapView from './components/MapView';
 import LogEntry from './components/LogEntry';
@@ -24,6 +24,7 @@ const App = () => {
   });
   const [errorMsg, setErrorMsg] = useState({});
   const [logEntries, setLogEntries] = useState([]);
+  const [userLogEntries, setUserLogEntries] = useState(false);
   const [addEntryLocation, setAddEntryLocation] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [newEntry, setNewEntry] = useState({
@@ -170,6 +171,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
+    setUserLogEntries(false);
     setErrorMsg({});
     window.localStorage.removeItem('user');
     api.setToken(null);
@@ -186,6 +188,13 @@ const App = () => {
 
   const handleSignUp = async (event) => {
     event.preventDefault();
+    if (newUser.password.length < 6) {
+      setErrorMsg({
+        password: 'Minimum length is 6 characters.',
+        errorType: 'signupError',
+      });
+      return;
+    }
     signUpService
       .createAccount(newUser)
       .then((createdUser) => {
@@ -216,9 +225,18 @@ const App = () => {
     setNewEntry({ ...newEntry, rating: newRating });
   };
 
+  const entriesToShow = userLogEntries
+    ? logEntries.filter((entry) => entry.username === user.username)
+    : logEntries;
+
   return (
     <>
-      <Navbar user={user} handleLogout={handleLogout} />
+      <Navbar
+        user={user}
+        handleLogout={handleLogout}
+        userLogEntries={userLogEntries}
+        setUserLogEntries={setUserLogEntries}
+      />
 
       <Switch>
         <Route path="/login">
@@ -245,7 +263,7 @@ const App = () => {
           <MapView
             showAddMarkerPopup={showAddMarkerPopup}
             showAddMarkerPopupGeoCode={showAddMarkerPopupGeoCode}>
-            {logEntries.map((entry) => (
+            {entriesToShow.map((entry) => (
               // children: EntryMarker, EntryPopup, EntryDescription
               <LogEntry
                 key={entry.id}
