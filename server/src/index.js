@@ -28,6 +28,7 @@ mongoose
     console.log('Error connecting to MongoDB', error.message);
   });
 
+app.use(express.static('build'));
 app.use(morgan('common'));
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
